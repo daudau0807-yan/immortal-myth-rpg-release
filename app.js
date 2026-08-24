@@ -4379,17 +4379,29 @@ function branchMatches(value, branch) {
   const standards = (branch.answers || []).map(normalizeAnswer).filter(Boolean);
   if (standards.includes(input)) return true;
 
-  const threshold = branch.threshold ?? 0.72;
+  // 數字讖言屬於密碼題，仍需完全一致；其餘題目採概念式寬鬆判定。
+  const isExactCode = branch.id === "fall-prophecy-answer";
+  if (isExactCode) return false;
+
+  // 玩家用完整句子包住標準答案，或以標準答案概括較長描述時，直接視為同義。
+  const containsMeaning = standards.some((answer) => {
+    const shorter = Math.min(answer.length, input.length);
+    return shorter >= 2 && (input.includes(answer) || answer.includes(input));
+  });
+  if (containsMeaning) return true;
+
+  const threshold = Math.max(0.54, (branch.threshold ?? 0.72) - 0.14);
   const similar = standards.some((answer) => {
-    const required = Math.min(answer.length, input.length) <= 3 ? Math.max(threshold, 0.86) : threshold;
-    return editSimilarity(input, answer) >= required || bigramSimilarity(input, answer) >= Math.max(0.58, required - 0.12);
+    const required = Math.min(answer.length, input.length) <= 3 ? Math.max(threshold, 0.7) : threshold;
+    return editSimilarity(input, answer) >= required || bigramSimilarity(input, answer) >= Math.max(0.42, required - 0.16);
   });
   if (similar) return true;
 
   const keywords = (branch.keywords || []).map(normalizeAnswer).filter(Boolean);
   if (keywords.length === 0) return false;
   const matchedKeywords = keywords.filter((keyword) => input.includes(keyword)).length;
-  return matchedKeywords / keywords.length >= (branch.keywordRatio ?? 0.67);
+  const lenientKeywordRatio = Math.min(branch.keywordRatio ?? 0.67, 0.5);
+  return matchedKeywords / keywords.length >= lenientKeywordRatio;
 }
 
 function normalizeAnswer(value) {
