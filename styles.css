@@ -959,6 +959,7 @@ h1 {
 }
 
 .puzzle-tree-canvas {
+  position: relative;
   display: grid;
   gap: 46px;
   min-width: 980px;
@@ -968,6 +969,48 @@ h1 {
   background:
     repeating-linear-gradient(90deg, transparent 0 79px, rgba(var(--tree-color), 0.035) 79px 80px),
     rgba(4, 5, 6, 0.82);
+}
+
+.puzzle-tree--myth .puzzle-tree-canvas {
+  background:
+    repeating-linear-gradient(90deg, transparent 0 79px, rgba(214, 177, 86, 0.055) 79px 80px),
+    linear-gradient(rgba(5, 5, 4, 0.78), rgba(5, 5, 4, 0.9)),
+    url("assets/main-visual.png") center / cover no-repeat;
+}
+
+.puzzle-tree--sky .puzzle-tree-canvas {
+  background:
+    repeating-linear-gradient(90deg, transparent 0 79px, rgba(120, 176, 194, 0.055) 79px 80px),
+    linear-gradient(rgba(3, 10, 14, 0.76), rgba(3, 10, 14, 0.91)),
+    url("assets/sky-visual.png") center / cover no-repeat;
+}
+
+.puzzle-tree--fall .puzzle-tree-canvas {
+  background:
+    repeating-linear-gradient(90deg, transparent 0 79px, rgba(205, 48, 61, 0.065) 79px 80px),
+    linear-gradient(rgba(29, 2, 7, 0.7), rgba(24, 1, 5, 0.91)),
+    url("assets/fall-visual.png") center / cover no-repeat;
+}
+
+.puzzle-tree--love .puzzle-tree-canvas {
+  background:
+    repeating-linear-gradient(90deg, transparent 0 79px, rgba(207, 158, 118, 0.055) 79px 80px),
+    linear-gradient(rgba(17, 9, 7, 0.73), rgba(13, 7, 6, 0.91)),
+    url("assets/love-visual.png") center / cover no-repeat;
+}
+
+.puzzle-tree-canvas::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 130px rgba(0, 0, 0, 0.62);
+}
+
+.puzzle-tree-canvas > * {
+  position: relative;
+  z-index: 1;
 }
 
 .puzzle-question {
@@ -3747,7 +3790,7 @@ h1 {
     min-width: 0;
     width: 100%;
     padding: 14px;
-    background: rgba(4, 5, 6, 0.88);
+    background-color: rgba(4, 5, 6, 0.88);
   }
 
   .puzzle-question,
