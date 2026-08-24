@@ -4253,6 +4253,7 @@ function createPuzzleStageProgress(tree) {
       !unlockedBranches.has(branchKey(tree, { id: branchId }))
     ).length;
     const rewardName = milestone.reward?.text?.[0] || "新文本";
+    const rewardTitle = rewardName.replace(/已解鎖$/, "");
     const complete = remaining === 0;
 
     item.className = "puzzle-stage-progress__item";
@@ -4263,8 +4264,8 @@ function createPuzzleStageProgress(tree) {
     }
     label.textContent = `第 ${index + 1} 階段`;
     status.textContent = complete
-      ? `已解鎖｜${rewardName}`
-      : `還有 ${remaining} 題｜${rewardName}`;
+      ? `${rewardTitle}已解鎖`
+      : `還有 ${remaining} 題｜將解鎖${rewardTitle}`;
     item.append(label, status);
     tracker.appendChild(item);
   });
