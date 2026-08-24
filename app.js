@@ -3464,9 +3464,11 @@ const unlockedBranches = new Set();
 const puzzleFeedback = new Map();
 const announcedStageRewards = new Set();
 const playedChapterIntros = new Set();
+const chapterPageMemory = new Map();
 let allStoryTextsUnlocked = false;
 let activeChapterPages = [];
 let activeChapterPage = 0;
+let activeChapterKey = "";
 let activeChapterFormat = "continuous";
 let activeChapterChallenge = "";
 let activeChapterInnerMonologue = new Set();
@@ -3519,8 +3521,9 @@ document.querySelector("[data-love-painting-close]").addEventListener("click", c
 document.querySelector("[data-character-close]").addEventListener("click", () => characterModal.close());
 document.querySelector("[data-person-close]").addEventListener("click", () => characterPersonModal.close());
 document.querySelector("[data-story-close]").addEventListener("click", () => characterStoryModal.close());
-chapterPagePrev.addEventListener("click", () => showChapterPage(activeChapterPage - 1));
-chapterPageNext.addEventListener("click", () => showChapterPage(activeChapterPage + 1));
+chapterPagePrev.addEventListener("click", () => navigateChapterPage(-1));
+chapterPageNext.addEventListener("click", () => navigateChapterPage(1));
+enableChapterSwipe();
 finalResetConfirm.addEventListener("click", () => window.location.reload());
 finalSuccessClose.addEventListener("click", () => {
   window.clearTimeout(finalSuccessTimer);
@@ -3652,8 +3655,12 @@ function openChapter(story, chapter) {
     innerMonologueEndIndex >= 0 ? chapter.text.slice(0, innerMonologueEndIndex + 1) : []
   );
   activeChapterPages = paginateChapterText(chapter.text, activeChapterFormat);
-  activeChapterPage = 0;
-  showChapterPage(0, false);
+  activeChapterKey = `${story.theme}:${chapter.id || chapter.name}`;
+  activeChapterPage = Math.min(
+    chapterPageMemory.get(activeChapterKey) || 0,
+    Math.max(0, activeChapterPages.length - 1)
+  );
+  showChapterPage(activeChapterPage, false);
   if (chapter.intro && !playedChapterIntros.has(chapter.intro)) {
     playedChapterIntros.add(chapter.intro);
     playChapterIntro(chapter.intro, () => chapterModal.showModal());
@@ -3712,6 +3719,7 @@ function paginateChapterText(lines, format) {
 function showChapterPage(pageIndex, scrollToTop = true) {
   if (!activeChapterPages.length) return;
   activeChapterPage = Math.max(0, Math.min(pageIndex, activeChapterPages.length - 1));
+  if (activeChapterKey) chapterPageMemory.set(activeChapterKey, activeChapterPage);
   const lines = activeChapterPages[activeChapterPage];
   chapterText.replaceChildren();
 
@@ -3767,6 +3775,42 @@ function showChapterPage(pageIndex, scrollToTop = true) {
   if (scrollToTop) {
     chapterModal.querySelector(".chapter-sheet").scrollTo({ top: 0, behavior: "smooth" });
   }
+}
+
+function navigateChapterPage(direction) {
+  const nextPage = activeChapterPage + direction;
+  if (nextPage < 0 || nextPage >= activeChapterPages.length) return;
+  chapterText.classList.remove("is-swipe-left", "is-swipe-right");
+  void chapterText.offsetWidth;
+  chapterText.classList.add(direction > 0 ? "is-swipe-left" : "is-swipe-right");
+  showChapterPage(nextPage);
+}
+
+function enableChapterSwipe() {
+  let startX = 0;
+  let startY = 0;
+  let tracking = false;
+
+  chapterModal.addEventListener("touchstart", (event) => {
+    const target = event.target;
+    if (target.closest("button, input, textarea, select, a")) return;
+    const touch = event.touches[0];
+    if (!touch) return;
+    startX = touch.clientX;
+    startY = touch.clientY;
+    tracking = true;
+  }, { passive: true });
+
+  chapterModal.addEventListener("touchend", (event) => {
+    if (!tracking) return;
+    tracking = false;
+    const touch = event.changedTouches[0];
+    if (!touch) return;
+    const deltaX = touch.clientX - startX;
+    const deltaY = touch.clientY - startY;
+    if (Math.abs(deltaX) < 58 || Math.abs(deltaX) <= Math.abs(deltaY) * 1.25) return;
+    navigateChapterPage(deltaX < 0 ? 1 : -1);
+  }, { passive: true });
 }
 
 function renderFinalPasswordChallenge() {
