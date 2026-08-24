@@ -4210,9 +4210,56 @@ function renderPuzzleTrees() {
 
 function renderTreeCanvas(tree, canvas) {
   canvas.replaceChildren();
+  const stageProgress = createPuzzleStageProgress(tree);
+  if (stageProgress) canvas.appendChild(stageProgress);
   tree.questions.filter((question) => !(question.requires || []).length).forEach((question) => {
     canvas.appendChild(createQuestionNode(tree, question));
   });
+}
+
+function createPuzzleStageProgress(tree) {
+  const directRewards = tree.questions.flatMap((question) =>
+    question.branches
+      .filter((branch) => branch.reward?.type === "故事文本")
+      .map((branch) => ({
+        id: `branch-${branch.id}`,
+        requires: [branch.id],
+        reward: branch.reward
+      }))
+  );
+  const milestones = [...directRewards, ...(tree.stageRewards || [])];
+  if (milestones.length === 0) return null;
+
+  const tracker = document.createElement("div");
+  tracker.className = "puzzle-stage-progress";
+  tracker.style.setProperty("--stage-count", milestones.length);
+  let foundCurrent = false;
+
+  milestones.forEach((milestone, index) => {
+    const item = document.createElement("div");
+    const label = document.createElement("strong");
+    const status = document.createElement("span");
+    const remaining = (milestone.requires || []).filter((branchId) =>
+      !unlockedBranches.has(branchKey(tree, { id: branchId }))
+    ).length;
+    const rewardName = milestone.reward?.text?.[0] || "新文本";
+    const complete = remaining === 0;
+
+    item.className = "puzzle-stage-progress__item";
+    item.classList.toggle("is-complete", complete);
+    if (!complete && !foundCurrent) {
+      item.classList.add("is-current");
+      foundCurrent = true;
+    }
+    label.textContent = `第 ${index + 1} 階段`;
+    status.textContent = complete
+      ? `已解鎖｜${rewardName}`
+      : `還有 ${remaining} 題｜${rewardName}`;
+    item.append(label, status);
+    tracker.appendChild(item);
+  });
+
+  return tracker;
 }
 
 function createQuestionNode(tree, question, nested = false) {
