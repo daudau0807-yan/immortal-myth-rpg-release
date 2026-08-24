@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&display=swap");
+
 :root {
   color-scheme: dark;
   --ink: #050607;
@@ -8,7 +10,7 @@
   --gold: #c79b49;
   --teal: #2f8d88;
   --red: #813346;
-  --font-kai: "BiauKai", "DFKai-SB", "STKaiti", "KaiTi", "Kaiti TC", "Songti TC", serif;
+  --font-kai: "LXGW WenKai TC", "BiauKai", "DFKai-SB", "STKaiti", "KaiTi", "Kaiti TC", "Songti TC", serif;
   font-family: var(--font-kai);
 }
 
