@@ -3475,6 +3475,7 @@ let activeChapterInnerMonologue = new Set();
 let activeChapterStoryboard = false;
 let activeChapterEndingPainting = false;
 let finalSuccessTimer = 0;
+let pendingRewardReveal = null;
 const finalPassword = `賜予您羽翼 使您永不墜地
 賦予您回憶 使您無需恐懼
 倘若失翼那也將與這世界一切失憶`;
@@ -3515,7 +3516,7 @@ enableViewSwitching();
 enableDragging();
 
 document.querySelector("[data-close]").addEventListener("click", () => modal.close());
-document.querySelector("[data-reward-close]").addEventListener("click", () => rewardModal.close());
+document.querySelector("[data-reward-close]").addEventListener("click", closeRewardModal);
 document.querySelector("[data-chapter-close]").addEventListener("click", closeChapterModal);
 document.querySelector("[data-love-painting-close]").addEventListener("click", closeLovePaintingAndRevealTumi);
 document.querySelector("[data-character-close]").addEventListener("click", () => characterModal.close());
@@ -3538,7 +3539,12 @@ modal.addEventListener("click", (event) => {
 });
 
 rewardModal.addEventListener("click", (event) => {
-  if (event.target === rewardModal) rewardModal.close();
+  if (event.target === rewardModal) closeRewardModal();
+});
+
+rewardModal.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeRewardModal();
 });
 
 chapterModal.addEventListener("click", (event) => {
@@ -3622,6 +3628,7 @@ function renderChapterShelf(story, container) {
     button.type = "button";
     button.disabled = !unlocked;
     button.classList.toggle("is-unlocked", unlocked);
+    button.dataset.chapter = chapter.id || chapter.name;
     label.textContent = chapter.name;
     button.appendChild(label);
 
@@ -4245,7 +4252,7 @@ function createQuestionNode(tree, question, nested = false) {
 
   (question.text || []).forEach((line) => {
     const paragraph = document.createElement("p");
-    paragraph.textContent = line;
+    paragraph.textContent = line.replace(/^\s*\d+(?:-\d+)*[.、]?\s*/, "");
     prompt.appendChild(paragraph);
   });
 
@@ -4384,6 +4391,14 @@ function showBranchRewards(branches, tree) {
   const rewards = branches.map((branch) => branch.reward).filter((reward) => reward && (reward.text || []).length);
   if (rewards.length === 0) return;
 
+  const rewardLines = rewards.flatMap((reward) => reward.text || []);
+  const unlockedChapter = (storyChapters[tree?.id] || []).filter((chapter) =>
+    rewardLines.some((line) => line.includes(chapter.name))
+  ).at(-1);
+  pendingRewardReveal = unlockedChapter
+    ? { theme: tree.id, chapterId: unlockedChapter.id || unlockedChapter.name }
+    : null;
+
   rewardModal.dataset.theme = tree?.id || "";
   rewardType.textContent = rewards.some((reward) => reward.type === "故事文本") ? "你已獲得新文本" : "提示";
   rewardText.replaceChildren();
@@ -4395,6 +4410,31 @@ function showBranchRewards(branches, tree) {
     });
   });
   rewardModal.showModal();
+}
+
+function closeRewardModal() {
+  if (rewardModal.open) rewardModal.close();
+  if (!pendingRewardReveal) return;
+  const destination = pendingRewardReveal;
+  pendingRewardReveal = null;
+  window.requestAnimationFrame(() => revealUnlockedChapter(destination));
+}
+
+function revealUnlockedChapter({ theme, chapterId }) {
+  const story = stories.find((item) => item.theme === theme);
+  if (!story) return;
+  document.querySelector('[data-view="story"]')?.click();
+  if (modal.open) modal.close();
+  openStory(story);
+  window.requestAnimationFrame(() => {
+    const target = modalText.querySelector(`[data-chapter="${chapterId}"]`);
+    if (!target) return;
+    target.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+    target.classList.remove("is-newly-unlocked");
+    void target.offsetWidth;
+    target.classList.add("is-newly-unlocked");
+    window.setTimeout(() => target.classList.remove("is-newly-unlocked"), 3200);
+  });
 }
 
 function applyBranchReward(tree, branch) {
