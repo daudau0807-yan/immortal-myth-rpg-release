@@ -2028,6 +2028,7 @@ const storyChapters = {
       name: "第三章",
       title: "墜落之翼葬身之地 第三章",
       requires: ["fall-birth-answer", "fall-return-answer", "fall-time-answer"],
+      intro: "fall-wuyisi-stump",
       format: "dialogue",
       storyboard: true,
       text: [
@@ -3987,12 +3988,13 @@ function playChapterIntro(intro, onComplete) {
   chapterIntro.classList.remove("is-playing");
   void chapterIntro.offsetWidth;
   chapterIntro.classList.add("is-playing");
+  const duration = intro === "fall-wuyisi-stump" ? 4200 : 3200;
   window.setTimeout(() => {
     chapterIntro.classList.remove("is-playing");
     if (chapterIntro.open) chapterIntro.close();
     chapterIntro.removeAttribute("data-intro");
     onComplete();
-  }, 3200);
+  }, duration);
 }
 
 function setTheme(theme) {

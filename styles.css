@@ -2016,6 +2016,15 @@ h1 {
   filter: saturate(0.58) contrast(1.22) brightness(0.62);
 }
 
+.chapter-intro[data-intro="fall-wuyisi-stump"] .chapter-intro-image {
+  inset: -4%;
+  background:
+    radial-gradient(ellipse at 50% 56%, transparent 0 22%, rgba(31, 0, 4, 0.14) 44%, rgba(0, 0, 0, 0.52) 88%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(18, 0, 3, 0.26)),
+    url("assets/fall-chapter-3-wuyisi-intro.png") 50% 50% / cover no-repeat;
+  filter: saturate(0.72) contrast(1.16) brightness(0.7);
+}
+
 .chapter-intro::before,
 .chapter-intro::after {
   content: "";
@@ -2044,6 +2053,13 @@ h1 {
   box-shadow: inset 0 0 210px rgba(0, 0, 0, 0.84);
 }
 
+.chapter-intro[data-intro="fall-wuyisi-stump"]::after {
+  background:
+    radial-gradient(ellipse at 50% 60%, rgba(119, 9, 19, 0.17), transparent 34%),
+    radial-gradient(ellipse at center, transparent 24%, rgba(0, 0, 0, 0.78) 100%);
+  box-shadow: inset 0 0 220px rgba(0, 0, 0, 0.86);
+}
+
 .chapter-intro.is-playing {
   animation: fall-intro-frame 3200ms linear both;
 }
@@ -2054,6 +2070,18 @@ h1 {
 
 .chapter-intro[data-intro="fall-blood-tears"].is-playing .chapter-intro-image {
   animation: fall-intro-blood-tears 3200ms ease-out both;
+}
+
+.chapter-intro[data-intro="fall-wuyisi-stump"].is-playing {
+  animation: fall-intro-frame 4200ms linear both;
+}
+
+.chapter-intro[data-intro="fall-wuyisi-stump"].is-playing .chapter-intro-image {
+  animation: fall-intro-wuyisi-stump 4200ms cubic-bezier(0.2, 0.72, 0.22, 1) both;
+}
+
+.chapter-intro[data-intro="fall-wuyisi-stump"].is-playing::after {
+  animation: fall-intro-root-pulse 1400ms ease-in-out 3 both;
 }
 
 .chapter-intro.is-playing::before {
@@ -2960,6 +2988,43 @@ h1 {
   100% {
     transform: scale(1);
     filter: saturate(0.3) contrast(1.34) brightness(0.18) blur(3px);
+  }
+}
+
+@keyframes fall-intro-wuyisi-stump {
+  0% {
+    opacity: 0;
+    transform: scale(1.14);
+    filter: saturate(0.22) contrast(1.34) brightness(0.16) blur(9px);
+  }
+  18% {
+    opacity: 1;
+    filter: saturate(0.48) contrast(1.24) brightness(0.5) blur(2px);
+  }
+  68% {
+    transform: scale(1.055);
+    filter: saturate(0.76) contrast(1.18) brightness(0.74) blur(0);
+  }
+  86% {
+    opacity: 1;
+    transform: scale(1.025);
+    filter: saturate(0.68) contrast(1.2) brightness(0.66) blur(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+    filter: saturate(0.3) contrast(1.34) brightness(0.14) blur(4px);
+  }
+}
+
+@keyframes fall-intro-root-pulse {
+  0%,
+  100% {
+    opacity: 0.76;
+  }
+  50% {
+    opacity: 1;
+    filter: saturate(1.3) brightness(1.16);
   }
 }
 
