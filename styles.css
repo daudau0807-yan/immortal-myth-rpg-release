@@ -2025,6 +2025,15 @@ h1 {
   filter: saturate(0.72) contrast(1.16) brightness(0.7);
 }
 
+.chapter-intro[data-intro="fall-bloody-treasures"] .chapter-intro-image {
+  inset: -5%;
+  background:
+    radial-gradient(ellipse at 50% 48%, rgba(205, 142, 45, 0.08) 0 19%, rgba(43, 1, 5, 0.15) 48%, rgba(0, 0, 0, 0.56) 88%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.04), rgba(25, 0, 2, 0.3)),
+    url("assets/fall-final-bloody-treasure-hands-intro.png") 50% 50% / cover no-repeat;
+  filter: saturate(0.82) contrast(1.18) brightness(0.68);
+}
+
 .chapter-intro::before,
 .chapter-intro::after {
   content: "";
@@ -2060,6 +2069,13 @@ h1 {
   box-shadow: inset 0 0 220px rgba(0, 0, 0, 0.86);
 }
 
+.chapter-intro[data-intro="fall-bloody-treasures"]::after {
+  background:
+    radial-gradient(circle at 51% 42%, rgba(239, 184, 70, 0.19), transparent 18%),
+    radial-gradient(ellipse at 50% 54%, transparent 18%, rgba(50, 0, 4, 0.22) 48%, rgba(0, 0, 0, 0.88) 100%);
+  box-shadow: inset 0 0 230px rgba(0, 0, 0, 0.88);
+}
+
 .chapter-intro.is-playing {
   animation: fall-intro-frame 3200ms linear both;
 }
@@ -2082,6 +2098,18 @@ h1 {
 
 .chapter-intro[data-intro="fall-wuyisi-stump"].is-playing::after {
   animation: fall-intro-root-pulse 1400ms ease-in-out 3 both;
+}
+
+.chapter-intro[data-intro="fall-bloody-treasures"].is-playing {
+  animation: fall-intro-frame 4200ms linear both;
+}
+
+.chapter-intro[data-intro="fall-bloody-treasures"].is-playing .chapter-intro-image {
+  animation: fall-intro-bloody-treasures 4200ms cubic-bezier(0.18, 0.74, 0.2, 1) both;
+}
+
+.chapter-intro[data-intro="fall-bloody-treasures"].is-playing::after {
+  animation: fall-intro-treasure-glint 1050ms ease-in-out 4 both;
 }
 
 .chapter-intro.is-playing::before {
@@ -3015,6 +3043,38 @@ h1 {
     transform: scale(1);
     filter: saturate(0.3) contrast(1.34) brightness(0.14) blur(4px);
   }
+}
+
+@keyframes fall-intro-bloody-treasures {
+  0% {
+    opacity: 0;
+    transform: scale(1.16) translateY(2%);
+    filter: saturate(0.25) contrast(1.38) brightness(0.12) blur(8px);
+  }
+  17% {
+    opacity: 1;
+    filter: saturate(0.55) contrast(1.26) brightness(0.46) blur(2px);
+  }
+  62% {
+    transform: scale(1.065) translateY(0);
+    filter: saturate(0.88) contrast(1.2) brightness(0.72) blur(0);
+  }
+  84% {
+    opacity: 1;
+    transform: scale(1.025);
+    filter: saturate(0.78) contrast(1.22) brightness(0.64) blur(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+    filter: saturate(0.34) contrast(1.4) brightness(0.11) blur(4px);
+  }
+}
+
+@keyframes fall-intro-treasure-glint {
+  0%, 100% { opacity: 0.42; }
+  48% { opacity: 0.9; }
+  62% { opacity: 0.58; }
 }
 
 @keyframes fall-intro-root-pulse {

@@ -2382,6 +2382,7 @@ const storyChapters = {
       id: "chapter-4",
       name: "最終章",
       title: "墜落之翼葬身之地 最終章",
+      intro: "fall-bloody-treasures",
       requiresAny: [
         ["fall-final-unlock"],
         ["fall-desire-answer", "fall-narrator-answer", "fall-audience-answer"]
@@ -3988,7 +3989,7 @@ function playChapterIntro(intro, onComplete) {
   chapterIntro.classList.remove("is-playing");
   void chapterIntro.offsetWidth;
   chapterIntro.classList.add("is-playing");
-  const duration = intro === "fall-wuyisi-stump" ? 4200 : 3200;
+  const duration = ["fall-wuyisi-stump", "fall-bloody-treasures"].includes(intro) ? 4200 : 3200;
   window.setTimeout(() => {
     chapterIntro.classList.remove("is-playing");
     if (chapterIntro.open) chapterIntro.close();
