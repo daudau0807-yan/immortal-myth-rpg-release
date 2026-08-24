@@ -3168,14 +3168,21 @@ puzzleTrees.find((tree) => tree.id === "sky").questions = [
     id: "sky-judgment",
     level: 4,
     requires: ["sky-membrane-answer"],
-    text: ["3-3 王尚扉獲得羽翼之後遇到了什麼？"],
+    text: ["王尚扉為什麼想獲得翅膀？"],
     branches: [
       {
         id: "sky-judgment-answer",
-        answers: ["遭受審判", "受到審判", "被柒審判", "遇到柒判官"],
-        keywords: ["審判"],
+        answers: [
+          "他懷疑大地神不存在",
+          "他覺得傳說是真的",
+          "他嚮往天空",
+          "他相信天空神存在",
+          "因為魏何同樣也質疑大地神",
+          "因為供奉大地神從未獲得回報產生質疑"
+        ],
+        keywords: ["懷疑大地神", "質疑大地神", "傳說是真的", "嚮往天空", "相信天空神", "沒有回報", "未獲得回報"],
         keywordRatio: 1,
-        threshold: 0.78
+        threshold: 0.62
       }
     ]
   }

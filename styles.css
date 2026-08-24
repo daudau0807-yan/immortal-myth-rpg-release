@@ -2178,6 +2178,39 @@ h1 {
   background-color: rgba(48, 3, 10, 0.82);
 }
 
+.puzzle-tree--fall .puzzle-question--nested {
+  padding: 0 0 22px;
+  border: 0;
+  border-bottom: 1px dashed rgba(220, 67, 80, 0.4);
+  background: transparent;
+  box-shadow: none;
+}
+
+.puzzle-tree--fall .puzzle-question--nested:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.puzzle-tree--fall .puzzle-question-text {
+  min-height: 0;
+  padding: 13px 15px;
+  border: 0;
+  border-left: 2px solid rgba(220, 67, 80, 0.58);
+  background: rgba(35, 3, 8, 0.56);
+  box-shadow: none;
+}
+
+.puzzle-tree--fall .puzzle-question:focus-within .puzzle-question-text {
+  border-left-color: rgba(236, 103, 113, 0.95);
+  box-shadow: none;
+}
+
+.puzzle-tree--fall .puzzle-question--nested > .puzzle-branches {
+  margin-top: 18px;
+  padding-left: 14px;
+  border-left: 1px dashed rgba(220, 67, 80, 0.28);
+}
+
 .reward-modal[data-theme="fall"] .modal-body {
   background:
     linear-gradient(rgba(35, 1, 7, 0.62), rgba(20, 1, 4, 0.88)),
