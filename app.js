@@ -2387,6 +2387,7 @@ const storyChapters = {
         ["fall-final-unlock"],
         ["fall-desire-answer", "fall-narrator-answer", "fall-audience-answer"]
       ],
+      readRequires: ["fall-desire-answer", "fall-narrator-answer", "fall-audience-answer"],
       format: "dialogue",
       storyboard: true,
       challenge: "fall-expectation",
@@ -3656,6 +3657,15 @@ function renderChapterShelf(story, container) {
 }
 
 function openChapter(story, chapter) {
+  const readRequirements = chapter.readRequires || [];
+  const canRead = allStoryTextsUnlocked || readRequirements.length === 0 || readRequirements.every((branchId) =>
+    unlockedBranches.has(`${story.theme}:${branchId}`)
+  );
+  if (!canRead) {
+    showChapterReadingNotice(story, chapter);
+    return;
+  }
+
   chapterModal.dataset.theme = story.theme;
   chapterType.textContent = story.type;
   chapterTitle.textContent = chapter.title.slice(0, -(chapter.name.length + 1));
@@ -3683,6 +3693,24 @@ function openChapter(story, chapter) {
   } else {
     chapterModal.showModal();
   }
+}
+
+function showChapterReadingNotice(story, chapter) {
+  pendingRewardReveal = null;
+  rewardModal.dataset.theme = story.theme || "";
+  rewardType.textContent = `${chapter.name}已解鎖`;
+  rewardText.replaceChildren();
+
+  [
+    "閱讀條件尚未完成。",
+    "請先依序解鎖魔王支線前面的章節，才能閱讀最終章。"
+  ].forEach((line) => {
+    const paragraph = document.createElement("p");
+    paragraph.textContent = line;
+    rewardText.appendChild(paragraph);
+  });
+
+  if (!rewardModal.open) rewardModal.showModal();
 }
 
 function closeChapterModal() {
