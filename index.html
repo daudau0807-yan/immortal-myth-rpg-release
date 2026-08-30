@@ -15,6 +15,7 @@
       <nav class="section-nav">
         <button class="section-tab is-active" type="button" data-view="story">故事</button>
         <button class="section-tab" type="button" data-view="character">角色</button>
+        <button class="section-tab" type="button" data-view="map">地圖</button>
         <button class="section-tab" type="button" data-view="puzzle">解謎</button>
       </nav>
 
@@ -44,6 +45,21 @@
           <div class="collection-surface drag-surface puzzle-surface">
             <h2 class="view-title">解謎</h2>
             <div class="puzzle-grid" id="puzzle-grid"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" data-view-panel="map">
+        <div class="drag-viewport">
+          <div class="collection-surface drag-surface map-surface">
+            <div class="map-page-heading">
+              <div>
+                <p>LOCATION ARCHIVE</p>
+                <h2 class="view-title">地圖</h2>
+              </div>
+              <p>選擇樓層查看角色站位，也可在彈窗內左右滑動切換地圖。</p>
+            </div>
+            <div class="map-grid" id="map-grid"></div>
           </div>
         </div>
       </section>
@@ -142,6 +158,18 @@
       </div>
     </dialog>
 
-    <script src="app.js?v=20260828-final-reading-gate"></script>
+    <dialog class="map-modal" id="map-modal">
+      <div class="map-modal-sheet">
+        <button class="close map-modal-close" type="button" data-map-close>×</button>
+        <div class="map-carousel" id="map-carousel"></div>
+        <nav class="map-pagination" aria-label="地圖切換">
+          <button id="map-prev" type="button">← 上一張</button>
+          <span id="map-status" aria-live="polite"></span>
+          <button id="map-next" type="button">下一張 →</button>
+        </nav>
+      </div>
+    </dialog>
+
+    <script src="app.js?v=20260830-character-map"></script>
   </body>
 </html>
