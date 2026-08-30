@@ -357,6 +357,49 @@ const characters = [
     }
   }
 ];
+
+const locationMaps = [
+  {
+    id: "chemical-f1",
+    name: "化材 F1",
+    subtitle: "圖書區・無風區",
+    visual: "assets/map-chemical-f1.jpg",
+    markers: [
+      { characterId: "laozishu-daoshan", label: "盜山", place: "無風區 107", x: 88, y: 62 },
+      { characterId: "agongliu-qi", label: "柒", place: "無風區 107", x: 88, y: 76 }
+    ]
+  },
+  {
+    id: "chemical-f3-cs-f1",
+    name: "化材 F3／資工 F1",
+    subtitle: "紡織廠・畫室",
+    visual: "assets/map-chemical-f3-cs-f1.jpg",
+    markers: [
+      { characterId: "xiangfu", label: "降伏", place: "紡織廠 301", x: 7, y: 72 },
+      { characterId: "xuziyu", label: "徐梓郁", place: "紡織廠 302", x: 14, y: 84 },
+      { characterId: "neil-dolomo", label: "多隆摩", place: "畫室 105", x: 84, y: 23 }
+    ]
+  },
+  {
+    id: "chemical-f5",
+    name: "化材 F5",
+    subtitle: "王府・藥房",
+    visual: "assets/map-chemical-f5.jpg",
+    markers: [
+      { characterId: "anning", label: "安寧", place: "王府 504", x: 73, y: 10 },
+      { characterId: "weihe", label: "魏何", place: "王府 504", x: 84, y: 10 },
+      { characterId: "wangqiange", label: "王墘閣", place: "王府 504", x: 78, y: 24 },
+      { characterId: "zhiyinling-taimei", label: "泰枚", place: "藥房 505", x: 74, y: 50 },
+      { characterId: "tumi", label: "荼蘼", place: "藥房 505", x: 86, y: 50 },
+      { characterId: "yi-si-wuyishi", label: "梧漪士", place: "全場遊走", x: 75, y: 86 }
+    ]
+  }
+];
+
+const characterLocations = new Map(
+  locationMaps.flatMap((map) => map.markers.map((marker) => [marker.characterId, { ...marker, mapId: map.id, mapName: map.name }]))
+);
+
 const storyChapters = {
   myth: [
     {
@@ -3499,6 +3542,15 @@ const characterStoryModal = document.querySelector("#character-story-modal");
 const characterPersonText = document.querySelector("#character-person-text");
 const characterStoryText = document.querySelector("#character-story-text");
 const characterPersonTitle = document.querySelector("#character-person-title");
+const mapGrid = document.querySelector("#map-grid");
+const mapModal = document.querySelector("#map-modal");
+const mapCarousel = document.querySelector("#map-carousel");
+const mapPrev = document.querySelector("#map-prev");
+const mapNext = document.querySelector("#map-next");
+const mapStatus = document.querySelector("#map-status");
+let activeMapIndex = 0;
+let activeMapTarget = "";
+let mapDirection = 1;
 
 restoreUnlockedStoryTexts();
 
@@ -3522,8 +3574,10 @@ stories.forEach((story, index) => {
 
 renderCharacters();
 renderPuzzleTrees();
+renderMaps();
 enableViewSwitching();
 enableDragging();
+enableMapSwipe();
 
 document.querySelector("[data-close]").addEventListener("click", () => modal.close());
 document.querySelector("[data-reward-close]").addEventListener("click", closeRewardModal);
@@ -3532,6 +3586,9 @@ document.querySelector("[data-love-painting-close]").addEventListener("click", c
 document.querySelector("[data-character-close]").addEventListener("click", () => characterModal.close());
 document.querySelector("[data-person-close]").addEventListener("click", () => characterPersonModal.close());
 document.querySelector("[data-story-close]").addEventListener("click", () => characterStoryModal.close());
+document.querySelector("[data-map-close]").addEventListener("click", () => mapModal.close());
+mapPrev.addEventListener("click", () => navigateMap(-1));
+mapNext.addEventListener("click", () => navigateMap(1));
 chapterPagePrev.addEventListener("click", () => navigateChapterPage(-1));
 chapterPageNext.addEventListener("click", () => navigateChapterPage(1));
 enableChapterSwipe();
@@ -3555,6 +3612,10 @@ rewardModal.addEventListener("click", (event) => {
 rewardModal.addEventListener("cancel", (event) => {
   event.preventDefault();
   closeRewardModal();
+});
+
+mapModal.addEventListener("click", (event) => {
+  if (event.target === mapModal) mapModal.close();
 });
 
 chapterModal.addEventListener("click", (event) => {
@@ -4071,6 +4132,157 @@ function renderCollection(items, container) {
   });
 }
 
+function renderMaps() {
+  mapGrid.replaceChildren();
+  locationMaps.forEach((map, index) => {
+    const button = document.createElement("button");
+    const preview = document.createElement("span");
+    const copy = document.createElement("span");
+    const name = document.createElement("strong");
+    const subtitle = document.createElement("small");
+    const roster = document.createElement("span");
+
+    button.className = "map-card";
+    button.type = "button";
+    button.dataset.mapId = map.id;
+    preview.className = "map-card-preview";
+    preview.style.backgroundImage = `linear-gradient(rgba(1, 3, 5, 0.14), rgba(1, 3, 5, 0.5)), url("${map.visual}")`;
+    copy.className = "map-card-copy";
+    name.textContent = map.name;
+    subtitle.textContent = map.subtitle;
+    roster.className = "map-card-roster";
+    roster.textContent = map.markers.map((marker) => marker.label).join("・");
+    copy.append(name, subtitle, roster);
+    button.append(preview, copy);
+    button.addEventListener("click", () => openMap(index));
+    mapGrid.appendChild(button);
+  });
+}
+
+function openMap(index, characterId = "") {
+  activeMapIndex = Math.max(0, Math.min(locationMaps.length - 1, index));
+  activeMapTarget = characterId;
+  renderActiveMap();
+  if (!mapModal.open) mapModal.showModal();
+}
+
+function renderActiveMap() {
+  const map = locationMaps[activeMapIndex];
+  const slide = document.createElement("section");
+  const heading = document.createElement("header");
+  const kicker = document.createElement("p");
+  const title = document.createElement("h2");
+  const subtitle = document.createElement("p");
+  const frame = document.createElement("div");
+  const image = document.createElement("img");
+  const roster = document.createElement("div");
+
+  slide.className = `map-slide ${mapDirection > 0 ? "is-enter-right" : "is-enter-left"}`;
+  heading.className = "map-slide-heading";
+  kicker.textContent = "角色站位";
+  title.textContent = map.name;
+  subtitle.textContent = map.subtitle;
+  heading.append(kicker, title, subtitle);
+  frame.className = "map-frame";
+  image.src = map.visual;
+  image.alt = `${map.name}角色站位圖`;
+  frame.appendChild(image);
+
+  map.markers.forEach((marker) => {
+    const pin = document.createElement("button");
+    pin.className = "map-pin";
+    pin.classList.toggle("is-target", marker.characterId === activeMapTarget);
+    pin.type = "button";
+    pin.dataset.characterId = marker.characterId;
+    pin.style.left = `${marker.x}%`;
+    pin.style.top = `${marker.y}%`;
+    pin.setAttribute("aria-label", `${marker.label}：${marker.place}`);
+    pin.innerHTML = `<span></span><strong>${marker.label}</strong>`;
+    pin.addEventListener("click", () => highlightMapCharacter(marker.characterId));
+    frame.appendChild(pin);
+  });
+
+  roster.className = "map-roster";
+  map.markers.forEach((marker) => {
+    const item = document.createElement("button");
+    item.className = "map-roster-item";
+    item.classList.toggle("is-target", marker.characterId === activeMapTarget);
+    item.type = "button";
+    item.dataset.characterId = marker.characterId;
+    item.innerHTML = `<strong>${marker.label}</strong><span>${marker.place}</span>`;
+    item.addEventListener("click", () => highlightMapCharacter(marker.characterId));
+    roster.appendChild(item);
+  });
+
+  slide.append(heading, frame, roster);
+  mapCarousel.replaceChildren(slide);
+  mapStatus.textContent = `${activeMapIndex + 1} / ${locationMaps.length}　${map.name}`;
+  mapPrev.disabled = activeMapIndex === 0;
+  mapNext.disabled = activeMapIndex === locationMaps.length - 1;
+
+  window.requestAnimationFrame(() => {
+    slide.classList.remove("is-enter-right", "is-enter-left");
+    const target = slide.querySelector(".map-roster-item.is-target");
+    if (target) target.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  });
+}
+
+function highlightMapCharacter(characterId) {
+  activeMapTarget = characterId;
+  mapCarousel.querySelectorAll("[data-character-id]").forEach((item) => {
+    item.classList.toggle("is-target", item.dataset.characterId === characterId);
+  });
+  const target = mapCarousel.querySelector(`.map-roster-item[data-character-id="${characterId}"]`);
+  if (target) {
+    target.classList.remove("is-pulsing");
+    void target.offsetWidth;
+    target.classList.add("is-pulsing");
+    target.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }
+}
+
+function navigateMap(direction) {
+  const nextIndex = activeMapIndex + direction;
+  if (nextIndex < 0 || nextIndex >= locationMaps.length) return;
+  mapDirection = direction;
+  activeMapTarget = "";
+  activeMapIndex = nextIndex;
+  renderActiveMap();
+}
+
+function enableMapSwipe() {
+  let startX = 0;
+  let startY = 0;
+  let tracking = false;
+  mapCarousel.addEventListener("touchstart", (event) => {
+    if (event.target.closest("button")) return;
+    const touch = event.touches[0];
+    if (!touch) return;
+    startX = touch.clientX;
+    startY = touch.clientY;
+    tracking = true;
+  }, { passive: true });
+  mapCarousel.addEventListener("touchend", (event) => {
+    if (!tracking) return;
+    tracking = false;
+    const touch = event.changedTouches[0];
+    if (!touch) return;
+    const deltaX = touch.clientX - startX;
+    const deltaY = touch.clientY - startY;
+    if (Math.abs(deltaX) < 52 || Math.abs(deltaX) <= Math.abs(deltaY) * 1.2) return;
+    navigateMap(deltaX < 0 ? 1 : -1);
+  }, { passive: true });
+}
+
+function openCharacterLocation(character) {
+  const location = characterLocations.get(character.id);
+  if (!location) return;
+  const mapIndex = locationMaps.findIndex((map) => map.id === location.mapId);
+  if (characterModal.open) characterModal.close();
+  document.querySelector('[data-view="map"]')?.click();
+  window.setTimeout(() => openMap(mapIndex, character.id), 180);
+}
+
 function renderCharacters() {
   characterGrid.replaceChildren();
   ["長生屬", "短生屬"].forEach((group) => {
@@ -4152,12 +4364,11 @@ function openCharacter(character) {
     storyButton.className = "leather-button";
     personButton.type = "button";
     storyButton.type = "button";
-    personButton.textContent = "角色任務";
+    const location = characterLocations.get(character.id);
+    personButton.textContent = "角色站位";
     storyButton.textContent = "角色故事";
-    personButton.addEventListener("click", () => {
-      characterPersonTitle.textContent = entries.person.title;
-      openCharacterEntry(characterPersonModal, characterPersonText, entries.person.sections);
-    });
+    personButton.disabled = !location;
+    personButton.addEventListener("click", () => openCharacterLocation(character));
     storyButton.addEventListener("click", () => openCharacterEntry(characterStoryModal, characterStoryText, entries.story));
     actions.append(personButton, storyButton);
     characterText.appendChild(actions);
@@ -4629,6 +4840,7 @@ function enableViewSwitching() {
       if (characterModal.open) characterModal.close();
       if (characterPersonModal.open) characterPersonModal.close();
       if (characterStoryModal.open) characterStoryModal.close();
+      if (mapModal.open) mapModal.close();
       clearTheme();
     });
   });
