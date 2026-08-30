@@ -3320,12 +3320,20 @@ puzzleTrees.find((tree) => tree.id === "fall").questions = [
     id: "fall-time",
     level: 4,
     requires: ["fall-return-answer"],
-    text: ["2-3 阿宮溜・柒無法審判之物為何？"],
+    text: ["2-3 阿宮溜・柒負責審判何物？"],
     branches: [
       {
         id: "fall-time-answer",
-        answers: ["時間"],
-        keywords: ["時間"],
+        answers: [
+          "違反職責之人",
+          "違反職責者",
+          "違反職責",
+          "違背職責之人",
+          "違背職責",
+          "背離職責之人",
+          "背離職責"
+        ],
+        keywords: ["違反職責", "違背職責", "背離職責"],
         keywordRatio: 1,
         threshold: 0.9,
         nextQuestion: "fall-desire"
@@ -3337,6 +3345,7 @@ puzzleTrees.find((tree) => tree.id === "fall").questions = [
     level: 5,
     requires: ["fall-time-answer"],
     text: ["3-1 最難盜取之物，其名為？"],
+    hint: "提示：正因為最難盜取，我才需要大費周章地召喚惡魔……",
     branches: [
       {
         id: "fall-desire-answer",
@@ -3372,8 +3381,8 @@ puzzleTrees.find((tree) => tree.id === "fall").questions = [
     branches: [
       {
         id: "fall-audience-answer",
-        answers: ["未來的我"],
-        keywords: ["未來", "我"],
+        answers: ["自言自語", "未來的我", "未來的自己", "跟未來的自己對話"],
+        keywords: ["自言自語", "未來的我", "未來的自己"],
         keywordRatio: 1,
         threshold: 0.86
       }
@@ -3452,8 +3461,8 @@ puzzleTrees.find((tree) => tree.id === "love").questions = [
     branches: [
       {
         id: "love-stage-3-flower-answer",
-        answers: ["遺忘"],
-        keywords: ["遺忘"],
+        answers: ["遺忘", "美好事物的終結", "美好事物終結"],
+        keywords: ["遺忘", "美好事物的終結"],
         keywordRatio: 1,
         threshold: 0.9
       }
