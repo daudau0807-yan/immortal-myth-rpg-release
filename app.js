@@ -4146,22 +4146,29 @@ function renderMaps() {
   locationMaps.forEach((map, index) => {
     const button = document.createElement("button");
     const preview = document.createElement("span");
+    const badge = document.createElement("span");
     const copy = document.createElement("span");
     const name = document.createElement("strong");
     const subtitle = document.createElement("small");
     const roster = document.createElement("span");
+    const action = document.createElement("span");
 
     button.className = "map-card";
     button.type = "button";
     button.dataset.mapId = map.id;
     preview.className = "map-card-preview";
     preview.style.backgroundImage = `linear-gradient(rgba(1, 3, 5, 0.14), rgba(1, 3, 5, 0.5)), url("${map.visual}")`;
+    badge.className = "map-card-badge";
+    badge.textContent = String(index + 1).padStart(2, "0");
     copy.className = "map-card-copy";
     name.textContent = map.name;
     subtitle.textContent = map.subtitle;
     roster.className = "map-card-roster";
     roster.textContent = map.markers.map((marker) => marker.label).join("・");
-    copy.append(name, subtitle, roster);
+    action.className = "map-card-action";
+    action.textContent = "查看站位  →";
+    copy.append(name, subtitle, roster, action);
+    preview.appendChild(badge);
     button.append(preview, copy);
     button.addEventListener("click", () => openMap(index));
     mapGrid.appendChild(button);
