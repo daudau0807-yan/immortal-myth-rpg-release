@@ -33,6 +33,11 @@ const stories = [
   }
 ];
 
+// 部署 Google Apps Script 後，將取得的 /exec 網址貼在引號內。
+const EXPECTATION_FEEDBACK_ENDPOINT = "";
+const EXPECTATION_FEEDBACK_QUEUE_KEY = "fall-expectation-feedback-queue";
+const EXPECTATION_VISITOR_ID_KEY = "fall-expectation-anonymous-id";
+
 const characters = [
   {
     id: "neil-dolomo",
@@ -3586,6 +3591,7 @@ renderMaps();
 enableViewSwitching();
 enableDragging();
 enableMapSwipe();
+flushExpectationFeedbackQueue();
 
 document.querySelector("[data-close]").addEventListener("click", () => modal.close());
 document.querySelector("[data-reward-close]").addEventListener("click", closeRewardModal);
@@ -3993,6 +3999,7 @@ function renderFallExpectationChallenge() {
   const form = document.createElement("form");
   const input = document.createElement("textarea");
   const button = document.createElement("button");
+  const deliveryStatus = document.createElement("p");
   const response = document.createElement("div");
 
   section.className = "final-password-challenge fall-expectation-challenge";
@@ -4011,6 +4018,9 @@ function renderFallExpectationChallenge() {
   button.textContent = savedAnswer ? "已交付期望" : "交付期望";
   button.disabled = Boolean(savedAnswer);
   input.disabled = Boolean(savedAnswer);
+  deliveryStatus.className = "fall-expectation-delivery";
+  deliveryStatus.setAttribute("aria-live", "polite");
+  if (savedAnswer) deliveryStatus.textContent = "這份期望已保存在你的裝置中。";
   response.className = "fall-expectation-response";
 
   const revealResponse = () => {
@@ -4033,7 +4043,7 @@ function renderFallExpectationChallenge() {
 
   if (savedAnswer) revealResponse();
 
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const answer = input.value.trim();
     if (!answer) {
@@ -4047,13 +4057,95 @@ function renderFallExpectationChallenge() {
     input.disabled = true;
     button.disabled = true;
     button.textContent = "已交付期望";
+    deliveryStatus.textContent = EXPECTATION_FEEDBACK_ENDPOINT ? "正在收藏你的期望……" : "期望已保存在此裝置；回饋收集尚未連線。";
     revealResponse();
     response.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+    const delivered = await submitExpectationFeedback(answer);
+    if (delivered) {
+      deliveryStatus.textContent = "你的期望已匿名送達收藏庫。";
+      deliveryStatus.classList.add("is-delivered");
+    } else if (EXPECTATION_FEEDBACK_ENDPOINT) {
+      deliveryStatus.textContent = "目前無法連線，已暫存在裝置中，之後會自動重送。";
+    }
   });
 
-  form.append(input, button);
+  form.append(input, button, deliveryStatus);
   section.append(label, title, copy, form, response);
   chapterText.appendChild(section);
+}
+
+function createExpectationFeedback(answer) {
+  return {
+    submissionId: createFeedbackId(),
+    anonymousId: getExpectationVisitorId(),
+    answer,
+    submittedAt: new Date().toISOString(),
+    source: window.location.hostname || "local-preview",
+    story: "魔王支線最終章"
+  };
+}
+
+function createFeedbackId() {
+  if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+  return `feedback-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function getExpectationVisitorId() {
+  let visitorId = window.localStorage.getItem(EXPECTATION_VISITOR_ID_KEY);
+  if (!visitorId) {
+    visitorId = createFeedbackId();
+    window.localStorage.setItem(EXPECTATION_VISITOR_ID_KEY, visitorId);
+  }
+  return visitorId;
+}
+
+function readExpectationFeedbackQueue() {
+  try {
+    const queue = JSON.parse(window.localStorage.getItem(EXPECTATION_FEEDBACK_QUEUE_KEY) || "[]");
+    return Array.isArray(queue) ? queue : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function saveExpectationFeedbackQueue(queue) {
+  window.localStorage.setItem(EXPECTATION_FEEDBACK_QUEUE_KEY, JSON.stringify(queue.slice(-20)));
+}
+
+async function submitExpectationFeedback(answer) {
+  const payload = createExpectationFeedback(answer);
+  const queue = readExpectationFeedbackQueue();
+  queue.push(payload);
+  saveExpectationFeedbackQueue(queue);
+  if (!EXPECTATION_FEEDBACK_ENDPOINT) return false;
+  return deliverExpectationFeedback(payload);
+}
+
+async function deliverExpectationFeedback(payload) {
+  try {
+    await window.fetch(EXPECTATION_FEEDBACK_ENDPOINT, {
+      method: "POST",
+      mode: "no-cors",
+      keepalive: true,
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    const remaining = readExpectationFeedbackQueue().filter((item) => item.submissionId !== payload.submissionId);
+    saveExpectationFeedbackQueue(remaining);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+async function flushExpectationFeedbackQueue() {
+  if (!EXPECTATION_FEEDBACK_ENDPOINT) return;
+  const queue = readExpectationFeedbackQueue();
+  for (const payload of queue) {
+    const delivered = await deliverExpectationFeedback(payload);
+    if (!delivered) break;
+  }
 }
 
 function unlockFallFinalChapter(input, button, status) {

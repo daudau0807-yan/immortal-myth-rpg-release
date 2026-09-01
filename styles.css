@@ -3034,6 +3034,20 @@ h1 {
   line-height: 1.9;
 }
 
+.fall-expectation-delivery {
+  grid-column: 1 / -1;
+  min-height: 1.4em;
+  margin: 2px 0 0;
+  color: rgba(244, 229, 197, 0.58);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.fall-expectation-delivery.is-delivered {
+  color: #9fd5bc;
+}
+
 .fall-expectation-response {
   max-height: 0;
   margin-top: 0;
