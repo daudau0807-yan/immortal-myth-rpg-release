@@ -1,4 +1,3 @@
-const SPREADSHEET_ID = "請貼上試算表ID";
 const SHEET_NAME = "玩家期望";
 
 function doPost(event) {
@@ -11,7 +10,7 @@ function doPost(event) {
       return jsonResponse({ ok: false, error: "missing_fields" });
     }
 
-    const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
     const sheet = spreadsheet.getSheetByName(SHEET_NAME) || spreadsheet.insertSheet(SHEET_NAME);
 
     if (sheet.getLastRow() === 0) {
