@@ -34,7 +34,7 @@ const stories = [
 ];
 
 // 部署 Google Apps Script 後，將取得的 /exec 網址貼在引號內。
-const EXPECTATION_FEEDBACK_ENDPOINT = "";
+const EXPECTATION_FEEDBACK_ENDPOINT = "https://script.google.com/macros/s/AKfycbx7w6_fn3u5_CN9j7i1naVGdO5Iof4kbJzPz5FvfhBDGVTPY5kBNJnEpZbgPdOqaNc/exec";
 const EXPECTATION_FEEDBACK_QUEUE_KEY = "fall-expectation-feedback-queue";
 const EXPECTATION_VISITOR_ID_KEY = "fall-expectation-anonymous-id";
 
