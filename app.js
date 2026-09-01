@@ -368,7 +368,7 @@ const locationMaps = [
     id: "chemical-f1",
     name: "化材 F1",
     subtitle: "圖書區・無風區",
-    visual: "assets/map-chemical-f1-clean.png",
+    visual: "assets/map-chemical-f1-mythic-v2.png",
     markers: [
       { characterId: "laozishu-daoshan", label: "盜山", place: "無風區 107", x: 88, y: 62 },
       { characterId: "agongliu-qi", label: "柒", place: "無風區 107", x: 88, y: 76 }
@@ -378,7 +378,7 @@ const locationMaps = [
     id: "chemical-f3-cs-f1",
     name: "化材 F3／資工 F1",
     subtitle: "紡織廠・畫室",
-    visual: "assets/map-chemical-f3-cs-f1-clean.png",
+    visual: "assets/map-chemical-f3-cs-f1-mythic-v2.png",
     markers: [
       { characterId: "xiangfu", label: "降伏", place: "紡織廠 301", x: 7, y: 72 },
       { characterId: "xuziyu", label: "徐梓郁", place: "紡織廠 302", x: 14, y: 84 },
@@ -389,7 +389,7 @@ const locationMaps = [
     id: "chemical-f5",
     name: "化材 F5",
     subtitle: "王府・藥房",
-    visual: "assets/map-chemical-f5-clean.png",
+    visual: "assets/map-chemical-f5-mythic-v2.png",
     markers: [
       { characterId: "anning", label: "安寧", place: "王府 503", x: 54, y: 45 },
       { characterId: "weihe", label: "魏何", place: "王府 503", x: 62, y: 45 },

@@ -778,8 +778,9 @@ h1 {
   z-index: 3;
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 9px;
+  gap: 8px;
+  min-height: 38px;
+  padding: 8px 13px;
   border: 1px solid rgba(224, 234, 230, 0.58);
   border-radius: 999px;
   background: rgba(5, 11, 13, 0.9);
@@ -790,8 +791,8 @@ h1 {
 }
 
 .map-pin > span {
-  width: 8px;
-  height: 8px;
+  width: 11px;
+  height: 11px;
   flex: 0 0 auto;
   border-radius: 50%;
   background: #8dd0d0;
@@ -800,7 +801,8 @@ h1 {
 
 .map-pin strong {
   white-space: nowrap;
-  font-size: 0.74rem;
+  font-size: 0.92rem;
+  letter-spacing: 0.04em;
 }
 
 .map-pin.is-target {
@@ -4755,17 +4757,18 @@ h1 {
   }
 
   .map-pin {
-    gap: 4px;
-    padding: 3px 5px;
+    gap: 5px;
+    min-height: 30px;
+    padding: 5px 8px;
   }
 
   .map-pin > span {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
   }
 
   .map-pin strong {
-    font-size: 0.58rem;
+    font-size: 0.72rem;
   }
 
   .map-roster {
