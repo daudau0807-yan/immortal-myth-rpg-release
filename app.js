@@ -390,7 +390,6 @@ const locationMaps = [
       { characterId: "weihe", label: "魏何", place: "王府 503", x: 62, y: 45 },
       { characterId: "wangqiange", label: "王墘閣", place: "王府 503", x: 58, y: 53 },
       { characterId: "zhiyinling-taimei", label: "泰枚", place: "藥房 505", x: 74, y: 50 },
-      { characterId: "tumi", label: "荼蘼", place: "藥房 505", x: 86, y: 50 },
       { characterId: "yi-si-wuyishi", label: "梧漪士", place: "全場遊走", x: 75, y: 86 }
     ]
   }
