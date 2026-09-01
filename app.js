@@ -386,9 +386,9 @@ const locationMaps = [
     subtitle: "王府・藥房",
     visual: "assets/map-chemical-f5-clean.png",
     markers: [
-      { characterId: "anning", label: "安寧", place: "王府 504", x: 73, y: 10 },
-      { characterId: "weihe", label: "魏何", place: "王府 504", x: 84, y: 10 },
-      { characterId: "wangqiange", label: "王墘閣", place: "王府 504", x: 78, y: 24 },
+      { characterId: "anning", label: "安寧", place: "王府 503", x: 54, y: 45 },
+      { characterId: "weihe", label: "魏何", place: "王府 503", x: 62, y: 45 },
+      { characterId: "wangqiange", label: "王墘閣", place: "王府 503", x: 58, y: 53 },
       { characterId: "zhiyinling-taimei", label: "泰枚", place: "藥房 505", x: 74, y: 50 },
       { characterId: "tumi", label: "荼蘼", place: "藥房 505", x: 86, y: 50 },
       { characterId: "yi-si-wuyishi", label: "梧漪士", place: "全場遊走", x: 75, y: 86 }
